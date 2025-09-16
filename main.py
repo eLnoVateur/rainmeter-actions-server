@@ -60,24 +60,28 @@ class ActionReq(BaseModel):
 
 @app.post("/action")
 def dispatcher(req: ActionReq):
+    """
+    Dispatcher unique : appelle /run, /write ou /search
+    selon le champ `mode`.
+    """
     if req.mode == "run":
         return run_code(RunReq(
-            language=req.language,
-            code=req.code,
-            stdin=req.stdin,
+            language=req.language or "",
+            code=req.code or "",
+            stdin=req.stdin or "",
             timeoutMs=req.timeoutMs
         ))
     elif req.mode == "write":
         return file_gen(FileReq(
-            path=req.path,
-            content=req.content,
+            path=req.path or "",
+            content=req.content or "",
             overwrite=req.overwrite
         ))
     elif req.mode == "search":
         return search_docs(SearchReq(
-            query=req.query,
+            query=req.query or "",
             scope=req.scope,
             maxResults=req.maxResults
         ))
     else:
-        raise HTTPException(400, "mode must be run|write|search")
+        raise HTTPException(status_code=400, detail="mode must be run|write|search")
