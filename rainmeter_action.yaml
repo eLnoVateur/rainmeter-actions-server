@@ -1,0 +1,76 @@
+openapi: 3.1.0
+info:
+  title: Rainmeter Action Dispatcher
+  version: "1.0.0"
+  description: >
+    Endpoint unique `/action` permettant d'exécuter des actions Rainmeter.
+    Utiliser le champ `mode` pour choisir : 
+    - `run` → exécuter du code (python, lua, powershell, batch…)
+    - `write` → écrire un fichier (.ini, .lua…)
+    - `search` → rechercher dans la documentation Rainmeter
+
+servers:
+  - url: https://rainmeter-actions-server.onrender.com
+
+paths:
+  /action:
+    post:
+      summary: Dispatcher Rainmeter (run, write, search)
+      operationId: dispatchAction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mode]
+              properties:
+                mode:
+                  type: string
+                  enum: [run, write, search]
+                  description: Type d'action à exécuter
+                # --- RUN ---
+                language:
+                  type: string
+                  description: Langage à exécuter (python, lua, powershell, batch)
+                code:
+                  type: string
+                  description: Code source à exécuter
+                stdin:
+                  type: string
+                  description: Entrée standard (si besoin)
+                timeoutMs:
+                  type: integer
+                  default: 5000
+                  description: Timeout en millisecondes
+                # --- WRITE ---
+                path:
+                  type: string
+                  description: Chemin ou nom du fichier à créer/écrire
+                content:
+                  type: string
+                  description: Contenu du fichier
+                overwrite:
+                  type: boolean
+                  default: true
+                  description: Écraser le fichier existant si déjà présent
+                # --- SEARCH ---
+                query:
+                  type: string
+                  description: Mot-clé ou terme à rechercher dans la documentation
+                scope:
+                  type: string
+                  enum: [manual, forum, all]
+                  default: manual
+                  description: Portée de la recherche
+                maxResults:
+                  type: integer
+                  default: 5
+                  description: Nombre maximum de résultats
+      responses:
+        "200":
+          description: Résultat de l'action
+          content:
+            application/json:
+              schema:
+                type: object
