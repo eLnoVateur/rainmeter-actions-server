@@ -67,10 +67,20 @@ paths:
                   type: integer
                   default: 5
                   description: Nombre maximum de résultats
-      responses:
+            responses:
         "200":
           description: Résultat de l'action
           content:
             application/json:
               schema:
                 type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indique si l'action a réussi
+                  output:
+                    type: string
+                    description: Résultat ou message de retour
+                  error:
+                    type: string
+                    description: Message d'erreur éventuel
